@@ -99,6 +99,21 @@ class TodoService(
         return ApiResponse.from(response)
     }
 
+    fun updateRaw(
+        id: Long,
+        json: String,
+        credAuth: String? = "admin:admin"
+    ): ApiResponse<Unit> {
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = buildRequestWithAuth(
+            Request.Builder().url("$baseUrl$basePath/$id").put(body),
+            credAuth
+        )
+        val response = client.newCall(request).execute()
+        return ApiResponse.from(response)
+    }
+
     private fun buildRequestWithAuth(builder: Request.Builder, credAuth: String?): Request {
         return credAuth?.let { builder.withBasicAuth(credAuth).build() } ?: builder.build()
     }
