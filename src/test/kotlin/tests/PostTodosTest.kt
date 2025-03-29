@@ -5,7 +5,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import kotlin.test.Test
 
-open class PostTodosTest : TodoApiBaseTest() {
+class PostTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `POST creates todo and returns 201`() {

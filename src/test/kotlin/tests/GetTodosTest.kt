@@ -5,7 +5,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 
-open class GetTodosTest : TodoApiBaseTest() {
+class GetTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `GET returns all todos`() {

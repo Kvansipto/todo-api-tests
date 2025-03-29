@@ -10,10 +10,10 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class TodoService(
-    private val client: OkHttpClient = OkHttpClient(),
-    private val baseUrl: String
+    val client: OkHttpClient = OkHttpClient(),
+    val baseUrl: String
 ) {
-    private val basePath = "/todos"
+    val basePath = "/todos"
 
     fun getTodos(
         offset: Int? = null,
@@ -72,11 +72,14 @@ class TodoService(
     }
 
     fun deleteTodo(
-        id: Long,
+        id: Long? = null,
         credAuth: String? = "admin:admin"
     ): ApiResponse<Unit> {
+        val url = if (id != null) "$baseUrl$basePath/$id" else "$baseUrl$basePath/"
         val request = buildRequestWithAuth(
-            Request.Builder().url("$baseUrl$basePath/$id").delete(),
+            Request.Builder()
+                .url(url)
+                .delete(),
             credAuth
         )
         val response = client.newCall(request).execute()

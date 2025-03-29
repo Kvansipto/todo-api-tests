@@ -6,7 +6,7 @@ import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 
-open class UpdateTodosTest : TodoApiBaseTest() {
+class UpdateTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `PUT updates existing todo`() {

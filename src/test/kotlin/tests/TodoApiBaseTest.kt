@@ -26,8 +26,8 @@ open class TodoApiBaseTest {
     fun setup() {
         port = TestEnvironment.startDockerApp()
         val baseUrl = "${TestConfig.baseHttpUrl}:$port"
-        waitForHealthCheck("$baseUrl/todos")
         service = TodoService(client, baseUrl)
+        waitForHealthCheck("$baseUrl${service.basePath}")
     }
 
     @AfterAll
