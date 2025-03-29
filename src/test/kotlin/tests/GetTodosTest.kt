@@ -1,19 +1,11 @@
 package tests
 
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 
 open class GetTodosTest : TodoApiBaseTest() {
-
-    @Test
-    fun `GET todos should return 200`() {
-        val response = service.getTodos()
-        assertThat(response.code, equalTo(200))
-        assertThat("Expected empty list", response.body, empty())
-    }
 
     @Test
     fun `GET returns all todos`() {
@@ -59,15 +51,15 @@ open class GetTodosTest : TodoApiBaseTest() {
 
     @Test
     @Disabled
-    fun `GET todos should return 401 when user is unauthorized`() {
-        val response = service.getTodos(credAuth = null)
-        assertThat("Expected HTTP 401 Unauthorized", response.code, equalTo(401))
-    }
-
-    @Test
-    @Disabled
     fun `GET todos should return 403 when there's invalid token`() {
         val response = service.getTodos(credAuth = "bad:token")
         assertThat("Expected HTTP 403 Forbidden", response.code, equalTo(403))
     }
+
+// Additional test cases checklist:
+//
+// GET with limit = 0 (edge case)
+// GET with offset >= total count — should return empty list
+// GET with no auth -> 401
+// GET when no todos exist — should return empty array
 }

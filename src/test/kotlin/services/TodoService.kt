@@ -55,6 +55,22 @@ class TodoService(
         return ApiResponse.from(response)
     }
 
+    fun postRaw(
+        json: String,
+        credAuth: String? = "admin:admin"
+    ): ApiResponse<Unit> {
+        val requestBody = json.toRequestBody("application/json".toMediaType())
+
+        val request = buildRequestWithAuth(
+            Request.Builder()
+                .url("$baseUrl$basePath")
+                .post(requestBody), credAuth
+        )
+        val response = client.newCall(request).execute()
+
+        return ApiResponse.from(response)
+    }
+
     fun deleteTodo(
         id: Long,
         credAuth: String? = "admin:admin"

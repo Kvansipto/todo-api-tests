@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import services.TodoService
+import utils.ApiResponse
 import java.net.HttpURLConnection
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -42,11 +43,14 @@ open class TodoApiBaseTest {
         createdIds.clear()
     }
 
-    protected fun addTodo(id: Long, text: String, completed: Boolean = false): Todo {
+    protected fun addTodo(id: Long, text: String, completed: Boolean = false): ApiResponse<Unit> {
         val todo = Todo(id, text, completed)
-        service.postTodo(todo)
         createdIds.add(id)
-        return todo
+        return service.postTodo(todo)
+    }
+
+    protected fun addTodo(todo: Todo): ApiResponse<Unit> {
+        return addTodo(todo.id, todo.text, todo.completed)
     }
 
     private fun waitForHealthCheck(url: String, retries: Int = 20, delayMillis: Long = 300L) {
