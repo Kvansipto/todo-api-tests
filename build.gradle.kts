@@ -17,6 +17,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.1")
     testImplementation("org.testcontainers:testcontainers:1.19.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    testImplementation("org.hamcrest:hamcrest:3.0")
 }
 
 tasks.test {

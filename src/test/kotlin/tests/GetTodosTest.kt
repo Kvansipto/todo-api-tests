@@ -1,16 +1,73 @@
 package tests
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.TestInstance
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.empty
+import org.hamcrest.Matchers.equalTo
+import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 open class GetTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `GET todos should return 200`() {
         val response = service.getTodos()
+        assertThat(response.code, equalTo(200))
+        assertThat("Expected empty list", response.body, empty())
+    }
 
-        assertEquals(200, response.code, "Expected HTTP 200 OK")
+    @Test
+    fun `GET returns all todos`() {
+        (1L..10L).forEach { addTodo(it, "Todo $it") }
+
+        val response = service.getTodos()
+        assertThat(response.code, equalTo(200))
+        assertThat(response.body?.size, equalTo(10))
+    }
+
+    @Test
+    fun `pagination returns expected todos`() {
+        val allIds = (1L..10L).toList()
+        val offset = 5
+        val limit = 3
+        allIds.forEach { addTodo(it, "Todo $it", true) }
+
+        val response = service.getTodos(offset, limit)
+        assertThat(response.code, equalTo(200))
+
+        val expectedIds = allIds.drop(offset).take(limit)
+        val actualIds = response.body?.map { it.id }
+        assertThat(actualIds, equalTo(expectedIds))
+    }
+
+    @Test
+    fun `invalid limit value returns 400`() {
+        val expectedMessage = "Invalid query string"
+        val limit = -1
+        val response = service.getTodos(limit = limit)
+        assertThat("Expected HTTP 400 Bad Request", response.code, equalTo(400))
+        assertThat("Expected message is $expectedMessage", response.rawBody, equalTo(expectedMessage))
+    }
+
+    @Test
+    fun `invalid offset value returns 400`() {
+        val expectedMessage = "Invalid query string"
+        val offset = -1
+        val response = service.getTodos(offset = offset)
+        assertThat("Expected HTTP 400 Bad Request", response.code, equalTo(400))
+        assertThat("Expected message is $expectedMessage", response.rawBody, equalTo(expectedMessage))
+    }
+
+    @Test
+    @Disabled
+    fun `GET todos should return 401 when user is unauthorized`() {
+        val response = service.getTodos(credAuth = null)
+        assertThat("Expected HTTP 401 Unauthorized", response.code, equalTo(401))
+    }
+
+    @Test
+    @Disabled
+    fun `GET todos should return 403 when there's invalid token`() {
+        val response = service.getTodos(credAuth = "bad:token")
+        assertThat("Expected HTTP 403 Forbidden", response.code, equalTo(403))
     }
 }
