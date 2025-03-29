@@ -1,6 +1,7 @@
 package services
 
-import infra.ApiResponse
+import utils.ApiResponse
+import utils.withBasicAuth
 import models.Todo
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,7 +15,11 @@ class TodoService(
 ) {
     private val basePath = "/todos"
 
-    fun getTodos(offset: Int? = null, limit: Int? = null): ApiResponse<List<Todo>> {
+    fun getTodos(
+        offset: Int? = null,
+        limit: Int? = null,
+        credAuth: String? = "admin:admin"
+    ): ApiResponse<List<Todo>> {
         val httpUrl = "$baseUrl$basePath".toHttpUrlOrNull()!!
             .newBuilder()
             .apply {
@@ -23,25 +28,62 @@ class TodoService(
             }
             .build()
 
-        val request = Request.Builder()
-            .url(httpUrl)
-            .get()
-            .build()
+        val request = buildRequestWithAuth(
+            Request.Builder()
+                .url(httpUrl)
+                .get(), credAuth
+        )
         val response = client.newCall(request).execute()
 
         return ApiResponse.from(response)
     }
 
-    fun postTodo(todo: Todo): ApiResponse<Unit> {
+    fun postTodo(
+        todo: Todo,
+        credAuth: String? = "admin:admin"
+    ): ApiResponse<Unit> {
         val json = todo.toJson()
         val requestBody = json.toRequestBody("application/json".toMediaType())
 
-        val request = Request.Builder()
-            .url("$baseUrl$basePath")
-            .post(requestBody)
-            .build()
+        val request = buildRequestWithAuth(
+            Request.Builder()
+                .url("$baseUrl$basePath")
+                .post(requestBody), credAuth
+        )
         val response = client.newCall(request).execute()
 
         return ApiResponse.from(response)
+    }
+
+    fun deleteTodo(
+        id: Long,
+        credAuth: String? = "admin:admin"
+    ): ApiResponse<Unit> {
+        val request = buildRequestWithAuth(
+            Request.Builder().url("$baseUrl$basePath/$id").delete(),
+            credAuth
+        )
+        val response = client.newCall(request).execute()
+        return ApiResponse.from(response)
+    }
+
+    fun updateTodo(
+        id: Long,
+        todo: Todo,
+        credAuth: String? = "admin:admin"
+    ): ApiResponse<Unit> {
+        val json = todo.toJson()
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = buildRequestWithAuth(
+            Request.Builder().url("$baseUrl$basePath/$id").put(body),
+            credAuth
+        )
+        val response = client.newCall(request).execute()
+        return ApiResponse.from(response)
+    }
+
+    private fun buildRequestWithAuth(builder: Request.Builder, credAuth: String?): Request {
+        return credAuth?.let { builder.withBasicAuth(credAuth).build() } ?: builder.build()
     }
 }

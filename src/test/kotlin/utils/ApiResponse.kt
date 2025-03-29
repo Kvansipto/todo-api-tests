@@ -1,4 +1,4 @@
-package infra
+package utils
 
 import kotlinx.serialization.json.Json
 import okhttp3.Response
