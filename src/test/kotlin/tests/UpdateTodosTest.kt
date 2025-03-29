@@ -75,7 +75,7 @@ open class UpdateTodosTest : TodoApiBaseTest() {
         assertThat(rawJson.contains("another_one"), equalTo(false))
     }
 
-// Additional test cases checklist for PUT /todos:
+// Additional test cases checklist:
 //
 // PUT with empty request body → 400
 // PUT with invalid types (e.g. "completed": "yes", "id": "abc") → 400
