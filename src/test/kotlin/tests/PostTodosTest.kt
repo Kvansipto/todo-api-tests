@@ -3,13 +3,14 @@ package tests
 import models.Todo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
+import utils.IdGenerator.nextId
 import kotlin.test.Test
 
 class PostTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `POST creates todo and returns 201`() {
-        val todo = Todo(id = 1001L, text = "New todo", completed = false)
+        val todo = Todo(id = nextId(), text = "New todo", completed = false)
         val response = addTodo(todo)
 
         assertThat(response.code, equalTo(201))
@@ -20,7 +21,7 @@ class PostTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `POST duplicate id returns 400`() {
-        val todo = Todo(id = 2002L, text = "Duplicate", completed = false)
+        val todo = Todo(id = nextId(), text = "Duplicate", completed = false)
         val response = addTodo(todo)
         assertThat(response.code, equalTo(201))
 
@@ -59,6 +60,7 @@ class PostTodosTest : TodoApiBaseTest() {
 // Additional test cases checklist:
 //
 // POST with no auth user or invalid token
+// POST with id with negative sign
 // POST with empty `text` field
 // POST with extremely long `text`
 // POST with invalid content-type header

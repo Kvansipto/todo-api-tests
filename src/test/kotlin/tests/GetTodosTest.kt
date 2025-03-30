@@ -3,13 +3,14 @@ package tests
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Disabled
+import utils.IdGenerator.nextRange
 import kotlin.test.Test
 
 class GetTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `GET returns all todos`() {
-        (1L..10L).forEach { addTodo(it, "Todo $it") }
+        nextRange(10).forEach { addTodo(it, "Todo $it") }
 
         val response = service.getTodos()
         assertThat(response.code, equalTo(200))
@@ -18,7 +19,7 @@ class GetTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `pagination returns expected todos`() {
-        val allIds = (1L..10L).toList()
+        val allIds = nextRange(10).toList()
         val offset = 5
         val limit = 3
         allIds.forEach { addTodo(it, "Todo $it", true) }
@@ -58,8 +59,8 @@ class GetTodosTest : TodoApiBaseTest() {
 
 // Additional test cases checklist:
 //
-// GET with limit = 0 (edge case)
-// GET with offset >= total count — should return empty list
+// GET with limit = 0 (edge case) -> empty list or 400
+// GET with offset >= total count —> empty list
 // GET with no auth -> 401
-// GET when no todos exist — should return empty array
+// GET when no todos exist —> empty list
 }

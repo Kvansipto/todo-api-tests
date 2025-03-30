@@ -4,13 +4,14 @@ import models.Todo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Disabled
+import utils.IdGenerator.nextId
 import kotlin.test.Test
 
 class DeleteTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `DELETE removes existing todo`() {
-        val todo = Todo(id = 1L, text = "To delete", completed = false)
+        val todo = Todo(id = nextId(), text = "To delete", completed = false)
         addTodo(todo)
 
         val response = service.deleteTodo(todo.id)
@@ -22,7 +23,7 @@ class DeleteTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `DELETE non-existent todo returns 404`() {
-        val response = service.deleteTodo(999999L)
+        val response = service.deleteTodo(nextId())
         assertThat(response.code, equalTo(404))
     }
 
@@ -35,7 +36,7 @@ class DeleteTodosTest : TodoApiBaseTest() {
 
     @Test
     fun `DELETE then re-create with same ID works`() {
-        val id = 9100L
+        val id = nextId()
         val todo1 = Todo(id = id, text = "First version", completed = false)
         addTodo(todo1)
 
@@ -53,11 +54,11 @@ class DeleteTodosTest : TodoApiBaseTest() {
     @Test
     @Disabled
     fun `DELETE works even after PUT with mismatched ID in body`() {
-        val id = 3001L
+        val id = nextId()
         val original = Todo(id = id, text = "Original", completed = false)
         addTodo(original)
 
-        val mismatched = original.copy(id = 9999L, text = "Hacked", completed = true)
+        val mismatched = original.copy(id = nextId(), text = "Hacked", completed = true)
         val putResponse = service.updateTodo(id, mismatched)
 
         assertThat(putResponse.code, equalTo(400))
