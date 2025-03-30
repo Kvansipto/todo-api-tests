@@ -1,4 +1,4 @@
-package utils
+package wrappers
 
 import kotlinx.serialization.json.Json
 import okhttp3.Response

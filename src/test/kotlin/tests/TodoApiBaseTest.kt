@@ -9,8 +9,9 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
-import services.TodoService
-import utils.ApiResponse
+import services.TodoHttpService
+import services.TodoWebSocketService
+import wrappers.ApiResponse
 import java.net.HttpURLConnection
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -18,16 +19,19 @@ open class TodoApiBaseTest {
 
     private val client = OkHttpClient()
     private var port: Int = 0
-    protected lateinit var service: TodoService
+    protected lateinit var service: TodoHttpService
+    protected lateinit var wsService: TodoWebSocketService
 
     private val createdIds = mutableSetOf<Long>()
 
     @BeforeAll
     fun setup() {
         port = TestEnvironment.startDockerApp()
-        val baseUrl = "${TestConfig.baseHttpUrl}:$port"
-        service = TodoService(client, baseUrl)
-        waitForHealthCheck("$baseUrl${service.basePath}")
+        val baseHttpUrl = "${TestConfig.baseHttpUrl}:$port"
+        val baseWs = baseHttpUrl.replace("http", "ws")
+        service = TodoHttpService(client, baseHttpUrl, TestConfig.baseAuth)
+        waitForHealthCheck("$baseHttpUrl${service.basePath}")
+        wsService = TodoWebSocketService("$baseWs/ws", TestConfig.baseAuth, client)
     }
 
     @AfterAll

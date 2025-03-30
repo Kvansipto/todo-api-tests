@@ -13,4 +13,5 @@ object TestConfig {
     val imagePath: String get() = config.getProperty("docker.image.path")
     val imageUrl: String get() = config.getProperty("docker.image.download")
     val imageName: String get() = config.getProperty("docker.image.name")
+    val baseAuth: String get() = config.getProperty("auth")
 }
