@@ -9,7 +9,7 @@ object TestEnvironment {
 
     private lateinit var container: GenericContainer<*>
 
-    fun startDockerApp(exposedPort: Int = 4242): Int {
+    fun startDockerApp(exposedPort: Int = TestConfig.exposedPort): Int {
         if (!isImageLoaded()) {
             val imageFile = File(TestConfig.imagePath)
             if (!imageFile.exists()) {
