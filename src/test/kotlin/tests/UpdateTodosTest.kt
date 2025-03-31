@@ -24,7 +24,7 @@ class UpdateTodosTest : TodoApiBaseTest() {
     }
 
     @Test
-    @Disabled
+    @Disabled("Disabled until server validates mismatched ID in URL vs body")
     fun `PUT with mismatched id in URL vs body returns 400`() {
         val original = Todo(id = nextId(), text = "Original", completed = false)
         addTodo(original)
