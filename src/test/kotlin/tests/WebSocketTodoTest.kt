@@ -16,8 +16,8 @@ class WebSocketTodoTest : TodoApiBaseTest() {
         val todo = Todo(nextId(), "new WS todo", false)
         val msg = wsService.listenOnceAfter<TodoMessage> { addTodo(todo) }
 
-        assertThat(msg.body?.type, equalTo("new_todo"))
-        assertThat(msg.body?.data, equalTo(todo))
+        assertThat("WS message type should be 'new_todo'", msg.body?.type, equalTo("new_todo"))
+        assertThat("WS message should contain the created todo", msg.body?.data, equalTo(todo))
     }
 
     @Test
@@ -28,8 +28,12 @@ class WebSocketTodoTest : TodoApiBaseTest() {
             todos.forEach(::addTodo)
         }
 
-        assertThat(messages.size, equalTo(todos.size))
-        assertThat(messages.mapNotNull { it.body?.data?.id }, equalTo(todos.map { it.id }))
+        assertThat("Number of WS messages should match created todos", messages.size, equalTo(todos.size))
+        assertThat(
+            "Todo IDs in WS messages should match creation order",
+            messages.mapNotNull { it.body?.data?.id },
+            equalTo(todos.map { it.id })
+        )
     }
 
     @Test
@@ -53,5 +57,4 @@ class WebSocketTodoTest : TodoApiBaseTest() {
             hasItems(todo1, todo2)
         )
     }
-
 }

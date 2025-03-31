@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import services.TodoHttpService
+import services.TodoHttpService.Companion.BASE_PATH
 import services.TodoWebSocketService
 import wrappers.ApiResponse
 import java.net.HttpURLConnection
@@ -30,7 +31,7 @@ open class TodoApiBaseTest {
         val baseHttpUrl = "${TestConfig.baseHttpUrl}:$port"
         val baseWs = baseHttpUrl.replace("http", "ws")
         service = TodoHttpService(client, baseHttpUrl, TestConfig.baseAuth)
-        waitForHealthCheck("$baseHttpUrl${service.basePath}")
+        waitForHealthCheck("$baseHttpUrl$BASE_PATH")
         wsService = TodoWebSocketService("$baseWs/ws", TestConfig.baseAuth, client)
     }
 

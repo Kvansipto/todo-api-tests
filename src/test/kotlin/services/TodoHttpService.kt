@@ -11,17 +11,21 @@ import utils.withAuth
 
 class TodoHttpService(
     private val client: OkHttpClient = OkHttpClient(),
-    private val baseUrl: String,
+    baseUrl: String,
     private val baseAuth: String?
 ) {
-    val basePath = "/todos"
+    companion object {
+        const val BASE_PATH = "/todos"
+    }
+
+    private val todoHttpServiceUrl: String = "$baseUrl$BASE_PATH"
 
     fun getTodos(
         offset: Int? = null,
         limit: Int? = null,
         credAuth: String? = baseAuth
     ): ApiResponse<List<Todo>> {
-        val httpUrl = "$baseUrl$basePath".toHttpUrlOrNull()!!
+        val httpUrl = todoHttpServiceUrl.toHttpUrlOrNull()!!
             .newBuilder()
             .apply {
                 offset?.let { addQueryParameter("offset", it.toString()) }
@@ -44,17 +48,7 @@ class TodoHttpService(
         todo: Todo,
         credAuth: String? = baseAuth
     ): ApiResponse<Unit> {
-        val json = todo.toJson()
-        val requestBody = json.toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url("$baseUrl$basePath")
-            .withAuth(credAuth)
-            .post(requestBody)
-            .build()
-        val response = client.newCall(request).execute()
-
-        return ApiResponse.from(response)
+        return postRaw(todo.toJson(), credAuth)
     }
 
     fun postRaw(
@@ -64,7 +58,7 @@ class TodoHttpService(
         val requestBody = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("$baseUrl$basePath")
+            .url(todoHttpServiceUrl)
             .withAuth(credAuth)
             .post(requestBody)
             .build()
@@ -77,7 +71,7 @@ class TodoHttpService(
         id: Long? = null,
         credAuth: String? = baseAuth
     ): ApiResponse<Unit> {
-        val url = if (id != null) "$baseUrl$basePath/$id" else "$baseUrl$basePath/"
+        val url = if (id != null) "$todoHttpServiceUrl/$id" else "$todoHttpServiceUrl/"
         val request = Request.Builder()
             .url(url)
             .withAuth(credAuth)
@@ -93,16 +87,7 @@ class TodoHttpService(
         todo: Todo,
         credAuth: String? = baseAuth
     ): ApiResponse<Unit> {
-        val json = todo.toJson()
-        val body = json.toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url("$baseUrl$basePath/$id")
-            .withAuth(credAuth)
-            .put(body)
-            .build()
-        val response = client.newCall(request).execute()
-        return ApiResponse.from(response)
+        return updateRaw(id, todo.toJson(), credAuth)
     }
 
     fun updateRaw(
@@ -113,7 +98,7 @@ class TodoHttpService(
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("$baseUrl$basePath/$id")
+            .url("$todoHttpServiceUrl/$id")
             .withAuth(credAuth)
             .put(body)
             .build()
