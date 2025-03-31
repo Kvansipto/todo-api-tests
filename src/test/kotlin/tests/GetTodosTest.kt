@@ -1,8 +1,8 @@
 package tests
 
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo
-import org.junit.jupiter.api.Disabled
 import utils.IdGenerator.nextRange
 import kotlin.test.Test
 
@@ -53,16 +53,19 @@ class GetTodosTest : TodoApiBaseTest() {
     }
 
     @Test
-    @Disabled("Enable test after fix ")
-    fun `GET todos should return 403 when there's invalid token`() {
-        val response = service.getTodos(credAuth = "bad:token")
-        assertThat("Expected HTTP 403 Forbidden", response.code, equalTo(403))
+    fun `GET with offset greater than total count should return empty list`() {
+        val todosCount = 10
+        nextRange(todosCount).forEach { addTodo(it, "Todo $it") }
+
+        val response = service.getTodos(offset = todosCount)
+        assertThat("Expected 200 OK on GET todos", response.code, equalTo(200))
+        assertThat("Expected empty list", response.body, empty())
     }
 
 // Additional test cases checklist:
 //
 // GET with limit = 0 (edge case) -> empty list or 400
-// GET with offset >= total count —> empty list
 // GET with no auth -> 401
+// GET with invalid auth -> 403
 // GET when no todos exist —> empty list
 }
